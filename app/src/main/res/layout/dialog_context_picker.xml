@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dialog per scegliere manualmente la modalità del giorno come Aviate -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_card"
+    android:paddingVertical="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SCEGLI MODALITÀ"
+        android:textColor="#88FFFFFF"
+        android:textSize="11sp"
+        android:letterSpacing="0.18"
+        android:fontFamily="sans-serif-medium"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="12dp" />
+
+    <!-- Item: Buongiorno -->
+    <LinearLayout android:id="@+id/itemMorning"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="☀️" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Buongiorno" android:textColor="@color/white"
+            android:textSize="15sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Item: In viaggio -->
+    <LinearLayout android:id="@+id/itemCommute"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="🚌" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="In viaggio" android:textColor="@color/white"
+            android:textSize="15sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Item: Lavoro -->
+    <LinearLayout android:id="@+id/itemWork"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="💼" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Lavoro" android:textColor="@color/white"
+            android:textSize="15sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Item: Pausa pranzo -->
+    <LinearLayout android:id="@+id/itemLunch"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="🍽️" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Pausa pranzo" android:textColor="@color/white"
+            android:textSize="15sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Item: Buonasera -->
+    <LinearLayout android:id="@+id/itemEvening"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="🌆" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Buonasera" android:textColor="@color/white"
+            android:textSize="15sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Item: Buonanotte -->
+    <LinearLayout android:id="@+id/itemNight"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="🌙" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Buonanotte" android:textColor="@color/white"
+            android:textSize="15sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+    <!-- Opzione: torna automatico -->
+    <LinearLayout android:id="@+id/itemAuto"
+        android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingHorizontal="20dp" android:clickable="true" android:focusable="true"
+        android:background="@drawable/bg_app_row_press">
+        <TextView android:layout_width="32dp" android:layout_height="wrap_content"
+            android:text="🔄" android:textSize="20sp" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Automatico (ora del giorno)" android:textColor="#AAFFFFFF"
+            android:textSize="14sp" android:fontFamily="sans-serif" android:layout_marginStart="12dp" />
+    </LinearLayout>
+
+</LinearLayout>

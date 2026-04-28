@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Card di ogni categoria nella schermata Collections, fedele ad Aviate -->
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="14dp"
+    app:cardBackgroundColor="#B3000000"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header della card: emoji + nome categoria + conteggio -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="10dp"
+            android:background="@drawable/bg_category_header">
+
+            <!-- Emoji grande -->
+            <TextView
+                android:id="@+id/tvCategoryEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💬"
+                android:textSize="22sp"
+                android:layout_marginEnd="10dp" />
+
+            <!-- Nome categoria -->
+            <TextView
+                android:id="@+id/tvCategoryName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="COMUNICAZIONE"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:letterSpacing="0.08"
+                android:fontFamily="sans-serif-medium" />
+
+            <!-- Conteggio app -->
+            <TextView
+                android:id="@+id/tvAppCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 app"
+                android:textColor="#88FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif" />
+
+        </LinearLayout>
+
+        <!-- Divisore sottile -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#22FFFFFF" />
+
+        <!-- Griglia icone app: max 2 righe × 4 colonne = 8 app come Aviate -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCategoryApps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="10dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
