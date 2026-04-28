@@ -3,9 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:background="@color/background_main"> <LinearLayout
         android:id="@+id/clockBlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,44 +21,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="09:41"
-            android:textColor="#FFFFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="96sp"
             android:fontFamily="sans-serif-thin"
             android:letterSpacing="-0.05"
             android:includeFontPadding="false"
-            android:shadowColor="#AA000000"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="16"/>
-
-        <TextView
+            android:shadowRadius="0" /> <TextView
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Martedì, 28 Aprile"
-            android:textColor="#EEFFFFFF"
-            android:textSize="16sp"
-            android:fontFamily="sans-serif-light"
-            android:letterSpacing="0.02"
-            android:shadowColor="#AA000000"
-            android:shadowDx="0"
-            android:shadowDy="1"
-            android:shadowRadius="8"/>
-
-    </LinearLayout>
+            android:text="MARTEDÌ, 28 APRILE"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.1"
+            android:textAllCaps="true" /> </LinearLayout>
 
     <TextView
         android:id="@+id/tvSwipeHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="◂  Stream    ·    Collezioni  ▸"
-        android:textColor="#88FFFFFF"
+        android:text="◂  STREAM    ·    COLLEZIONI  ▸"
+        android:textColor="@color/text_secondary"
         android:textSize="11sp"
-        android:fontFamily="sans-serif-light"
-        android:letterSpacing="0.06"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.08"
         android:paddingBottom="185dp"
-        android:shadowColor="#CC000000"
-        android:shadowDx="0" android:shadowDy="1" android:shadowRadius="6"
+        android:alpha="0.6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
