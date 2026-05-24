@@ -1,0 +1,404 @@
+import { useState } from "react";
+
+const WORKFLOW_YAML = `name: Build AviateClone v10 APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install SDK components
+        run: |
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-\${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AviateClone-v10-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Show APK info
+        run: |
+          echo "Build completata!"
+          ls -lh app/build/outputs/apk/debug/
+`;
+
+const steps = [
+  {
+    n: "01", icon: "🐙", title: "Crea il repo",
+    accent: "#58a6ff", bg: "#0d1117",
+    bullets: [
+      "Vai su github.com/new",
+      'Nome: AviateClone (o qualsiasi nome)',
+      "Public o Private — entrambi OK",
+      "Clicca Create repository",
+    ],
+    link: { label: "Apri GitHub →", url: "https://github.com/new" }
+  },
+  {
+    n: "02", icon: "📦", title: "Carica il codice",
+    accent: "#3fb950", bg: "#0d1117",
+    bullets: [
+      "Nel repo appena creato clicca Add file → Upload files",
+      "Estrai AviateClone_v10_SmartML.zip sul tuo PC",
+      "Trascina la cartella AviateFixed/ nel browser",
+      "Clicca Commit changes",
+    ],
+    note: "⚠️  Carica il contenuto di AviateFixed/, non la cartella stessa"
+  },
+  {
+    n: "03", icon: "⚙️", title: "Aggiungi il workflow",
+    accent: "#bc8cff", bg: "#0d1117",
+    bullets: [
+      "Add file → Create new file",
+      "Nome file: .github/workflows/build.yml",
+      "Incolla il YAML dal pannello qui sotto",
+      "Clicca Commit changes",
+    ]
+  },
+  {
+    n: "04", icon: "📲", title: "Scarica l'APK",
+    accent: "#f0883e", bg: "#0d1117",
+    bullets: [
+      "Vai nella tab Actions del repo",
+      "Clicca sul workflow Build AviateClone v10 APK",
+      "Attendi la spunta verde ✓ (~4 min)",
+      "Scarica AviateClone-v10-debug da Artifacts",
+    ]
+  },
+];
+
+const postInstall = [
+  { icon: "🔔", title: "Abilita badge notifiche", desc: 'Impostazioni → App → Accesso speciale → "Notifiche" → AviateClone' },
+  { icon: "📍", title: "Consenti posizione", desc: "La prima volta l'app chiede il permesso — accetta per meteo e contesto automatico" },
+  { icon: "📊", title: "Statistiche utilizzo", desc: 'Impostazioni → App → Accesso speciale → "Utilizzo app" → AviateClone — necessario per ML' },
+  { icon: "✨", title: "Attiva Gemini AI (opzionale)", desc: "Nella schermata Stream: tieni premuto il chip modalità → inserisci la chiave da aistudio.google.com" },
+  { icon: "📱", title: "Imposta come launcher", desc: "Quando ti chiede quale app usare come Home → scegli AviateClone" },
+];
+
+const features = [
+  { emoji: "🤖", label: "AppPredictionManager", desc: "ML Google on-device" },
+  { emoji: "✨", label: "Gemini AI Briefing", desc: "Riassunto mattutino" },
+  { emoji: "📈", label: "ML granulare 30min", desc: "Impara le tue routine" },
+  { emoji: "🔔", label: "Smart Notif Ranker", desc: "Priorità intelligente" },
+  { emoji: "📅", label: "Calendario reale", desc: "Prossimi eventi live" },
+  { emoji: "🌤", label: "Meteo Open-Meteo", desc: "No API key richiesta" },
+  { emoji: "📊", label: "Weekly Digest", desc: "Ogni lunedì mattina" },
+  { emoji: "🚗", label: "Auto Bluetooth", desc: "Rileva auto BT" },
+  { emoji: "A–Z", label: "Fast scroll", desc: "Barra alfabetica" },
+  { emoji: "🔍", label: "Google Search", desc: "Integrata in home" },
+  { emoji: "⊞", label: "Widget", desc: "AppWidgetHost nativo" },
+  { emoji: "🎯", label: "Zoom-from-icon", desc: "Apertura app M3" },
+];
+
+export default function App() {
+  const [copied, setCopied] = useState(false);
+  const [yamlOpen, setYamlOpen] = useState(false);
+  const [activeStep, setActiveStep] = useState(null);
+
+  const copy = () => {
+    navigator.clipboard.writeText(WORKFLOW_YAML);
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "#0d1117",
+      fontFamily: "'SF Pro Display', -apple-system, 'Segoe UI', sans-serif",
+      color: "#e6edf3",
+    }}>
+      {/* Grid bg */}
+      <div style={{
+        position: "fixed", inset: 0, pointerEvents: "none", opacity: 0.03,
+        backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)",
+        backgroundSize: "32px 32px"
+      }}/>
+
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "48px 20px 80px" }}>
+
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(88,166,255,.1)", border: "1px solid rgba(88,166,255,.25)",
+            borderRadius: 40, padding: "5px 16px", marginBottom: 20,
+            fontSize: 11, letterSpacing: "0.16em", color: "#58a6ff",
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#3fb950",
+              boxShadow: "0 0 8px #3fb950", display: "inline-block" }}/>
+            AviateClone v10 · SmartML + AI
+          </div>
+
+          <h1 style={{
+            fontSize: "clamp(26px,5vw,40px)", fontWeight: 800,
+            margin: "0 0 10px", letterSpacing: "-0.02em",
+            background: "linear-gradient(135deg,#fff 0%,#58a6ff 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>
+            Compila e installa l'APK
+          </h1>
+          <p style={{ color: "#8b949e", fontSize: 14, margin: 0 }}>
+            4 passi · ~4 minuti · completamente gratis
+          </p>
+        </div>
+
+        {/* Feature pills */}
+        <div style={{
+          display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center",
+          marginBottom: 44,
+        }}>
+          {features.map(f => (
+            <div key={f.label} style={{
+              background: "rgba(255,255,255,.05)",
+              border: "1px solid rgba(255,255,255,.08)",
+              borderRadius: 20, padding: "5px 12px",
+              fontSize: 12, color: "#8b949e",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <span style={{ fontSize: 14 }}>{f.emoji}</span>
+              <span style={{ color: "#e6edf3", fontWeight: 600 }}>{f.label}</span>
+              <span>· {f.desc}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Steps */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 32 }}>
+          {steps.map((step, idx) => {
+            const open = activeStep === idx;
+            return (
+              <div key={step.n}
+                onClick={() => setActiveStep(open ? null : idx)}
+                style={{
+                  background: open
+                    ? `linear-gradient(135deg,${step.accent}18,rgba(255,255,255,.03))`
+                    : "rgba(255,255,255,.03)",
+                  border: `1px solid ${open ? step.accent + "44" : "rgba(255,255,255,.08)"}`,
+                  borderRadius: 16, padding: "16px 20px",
+                  cursor: "pointer", transition: "all .2s",
+                }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12,
+                    background: step.accent + "20",
+                    border: `1px solid ${step.accent}44`,
+                    display: "flex", alignItems: "center",
+                    justifyContent: "center", fontSize: 20, flexShrink: 0,
+                  }}>{step.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ color: step.accent, fontSize: 10, fontFamily: "monospace",
+                        letterSpacing: ".1em" }}>STEP {step.n}</span>
+                      <span style={{ fontWeight: 700, fontSize: 15 }}>{step.title}</span>
+                    </div>
+                  </div>
+                  <span style={{
+                    color: "#484f58", fontSize: 11, transition: "transform .2s",
+                    transform: open ? "rotate(90deg)" : "none"
+                  }}>▶</span>
+                </div>
+
+                {open && (
+                  <div style={{
+                    marginTop: 14, paddingTop: 14,
+                    borderTop: `1px solid ${step.accent}22`,
+                  }}>
+                    <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+                      {step.bullets.map((b, i) => (
+                        <li key={i} style={{
+                          display: "flex", gap: 10, alignItems: "flex-start",
+                          padding: "5px 0", fontSize: 13, color: "#c9d1d9",
+                        }}>
+                          <span style={{ color: step.accent, fontWeight: 700,
+                            minWidth: 20, fontFamily: "monospace" }}>
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                    {step.note && (
+                      <div style={{
+                        marginTop: 10, padding: "8px 12px",
+                        background: "rgba(240,136,62,.1)",
+                        border: "1px solid rgba(240,136,62,.25)",
+                        borderRadius: 8, fontSize: 12, color: "#f0883e",
+                      }}>{step.note}</div>
+                    )}
+                    {step.link && (
+                      <a href={step.link.url} target="_blank" rel="noopener noreferrer"
+                        onClick={e => e.stopPropagation()}
+                        style={{
+                          display: "inline-block", marginTop: 12,
+                          padding: "8px 16px", background: step.accent,
+                          color: "#000", borderRadius: 10, fontSize: 12,
+                          fontWeight: 700, textDecoration: "none",
+                        }}>
+                        {step.link.label}
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* YAML block */}
+        <div style={{
+          background: "#010409",
+          border: "1px solid rgba(255,255,255,.1)",
+          borderRadius: 16, overflow: "hidden", marginBottom: 32,
+        }}>
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "12px 16px",
+            borderBottom: "1px solid rgba(255,255,255,.07)",
+            background: "rgba(255,255,255,.03)",
+          }}>
+            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              {["#ff5f57","#febc2e","#28c840"].map(c => (
+                <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }}/>
+              ))}
+              <span style={{ color: "#484f58", fontSize: 11, marginLeft: 8, fontFamily: "monospace" }}>
+                .github/workflows/build.yml
+              </span>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setYamlOpen(!yamlOpen)} style={{
+                background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.1)",
+                color: "#8b949e", borderRadius: 8, padding: "4px 12px",
+                fontSize: 11, cursor: "pointer", fontFamily: "monospace",
+              }}>
+                {yamlOpen ? "nascondi" : "mostra"}
+              </button>
+              <button onClick={copy} style={{
+                background: copied ? "#238636" : "rgba(88,166,255,.2)",
+                border: `1px solid ${copied ? "#238636" : "rgba(88,166,255,.4)"}`,
+                color: copied ? "#fff" : "#58a6ff",
+                borderRadius: 8, padding: "4px 14px",
+                fontSize: 11, cursor: "pointer", fontWeight: 700,
+                transition: "all .2s", fontFamily: "monospace",
+              }}>
+                {copied ? "✓ copiato!" : "📋 copia YAML"}
+              </button>
+            </div>
+          </div>
+
+          {yamlOpen ? (
+            <pre style={{
+              margin: 0, padding: 20, fontSize: 11, lineHeight: 1.7,
+              color: "#e6edf3", overflowX: "auto", fontFamily: "monospace",
+              maxHeight: 380, overflowY: "auto",
+            }}>
+              {WORKFLOW_YAML.split("\n").map((line, i) => {
+                let color = "#e6edf3";
+                if (line.trim().startsWith("#")) color = "#8b949e";
+                else if (/^\s+\w[\w-]*:/.test(line) && !line.trim().startsWith("-")) {
+                  const colon = line.indexOf(":");
+                  return (
+                    <span key={i}>
+                      <span style={{ color: "#79c0ff" }}>{line.slice(0, colon)}</span>
+                      <span style={{ color: "#8b949e" }}>:</span>
+                      <span style={{ color: "#a5d6ff" }}>{line.slice(colon + 1)}</span>
+                      {"\n"}
+                    </span>
+                  );
+                } else if (line.trim().startsWith("-")) color = "#ffdf5d";
+                return <span key={i} style={{ color }}>{line}{"\n"}</span>;
+              })}
+            </pre>
+          ) : (
+            <div style={{ padding: "14px 18px", color: "#484f58", fontSize: 12, fontStyle: "italic" }}>
+              Clicca <strong style={{ color: "#8b949e" }}>mostra</strong> per vedere il workflow,
+              o <strong style={{ color: "#58a6ff" }}>copia YAML</strong> per copiarlo direttamente.
+            </div>
+          )}
+        </div>
+
+        {/* Post-install */}
+        <div style={{
+          background: "rgba(255,255,255,.03)",
+          border: "1px solid rgba(255,255,255,.07)",
+          borderRadius: 16, padding: "20px 24px", marginBottom: 24,
+        }}>
+          <div style={{ fontSize: 10, letterSpacing: ".18em", color: "#484f58",
+            marginBottom: 16, fontFamily: "monospace" }}>
+            DOPO L'INSTALLAZIONE
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {postInstall.map(p => (
+              <div key={p.title} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>{p.icon}</span>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: "#e6edf3",
+                    marginBottom: 2 }}>{p.title}</div>
+                  <div style={{ fontSize: 12, color: "#8b949e", lineHeight: 1.5 }}>{p.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ADB widget tip */}
+        <div style={{
+          padding: "14px 18px",
+          background: "rgba(188,140,255,.08)",
+          border: "1px solid rgba(188,140,255,.2)",
+          borderRadius: 12, fontSize: 12, color: "#8b949e", lineHeight: 1.6,
+        }}>
+          <strong style={{ color: "#bc8cff" }}>Tip widget:</strong> se i widget danno
+          "Aggiunta non riuscita", concedi il permesso via ADB (una volta sola):
+          <br/>
+          <code style={{
+            display: "inline-block", marginTop: 6, padding: "3px 10px",
+            background: "rgba(255,255,255,.06)", borderRadius: 6,
+            fontFamily: "monospace", color: "#bc8cff", fontSize: 11,
+          }}>
+            adb shell appwidget grantbindappwidgetpermission com.aviateclone.launcher
+          </code>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
