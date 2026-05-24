@@ -34,22 +34,66 @@ jobs:
         run: |
           sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Iniezione Stub API Nascoste Android
+      - name: Generazione Stub API Nascoste (AppPrediction)
         run: |
-          GRADLEW_PATH=$(find . -name gradlew)
-          DIR_PATH=$(dirname "$GRADLEW_PATH")
-          cd "$DIR_PATH"
+          # Cerchiamo dove si trova la cartella principale del codice sorgente dell'app
+          APP_PATH=$(find . -name "MainActivity.kt" -o -name "MainActivity.java" | head -n 1)
+          SRC_MAIN_DIR=$(echo "$APP_PATH" | sed 's/\/java\/.*//' | sed 's/\/kotlin\/.*//')
           
-          if [ -f "app/build.gradle" ]; then
-            echo "Aggiungo la repository specifica e la dipendenza stub per AppPrediction..."
-            
-            # 1. Ci assicuriamo che nel blocco dependencies ci sia lo stub per compilare le API nascoste
-            # Usiamo compileOnly così serve solo a far star zitto il compilatore, senza appesantire l'APK
-            sed -i '/dependencies {/a \    compileOnly "dev.rikka.tools.refine:runtime:4.3.0"' app/build.gradle
-            
-            # 2. Aggiungiamo una regola per mappare le classi mancanti di AppTarget se necessario
-            echo "tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { kotlinOptions { freeCompilerArgs += ['-Xallow-unstable-dependencies'] } }" >> app/build.gradle
+          # Se non la trova di default, proviamo a forzare il percorso standard
+          if [ -z "$SRC_MAIN_DIR" ]; then
+            SRC_MAIN_DIR="AviateFixed/app/src/main"
           fi
+          
+          STUB_DIR="$SRC_MAIN_DIR/java/android/app/prediction"
+          echo "Creazione degli stub in: $STUB_DIR"
+          mkdir -p "$STUB_DIR"
+          
+          # Creiamo il file finto per AppTarget
+          cat << 'EOF' > "$STUB_DIR/AppTarget.java"
+          package android.app.prediction;
+          import android.os.Parcelable;
+          public final class AppTarget implements Parcelable {
+              public int describeContents() { return 0; }
+              public void writeToParcel(android.os.Parcel dest, int flags) {}
+              public AppTargetId getId() { return null; }
+              public String getPackageName() { return ""; }
+              public String getClassName() { return ""; }
+              public android.os.UserHandle getUser() { return null; }
+          }
+          EOF
+
+          # Creiamo il file finto per AppTargetId
+          cat << 'EOF' > "$STUB_DIR/AppTargetId.java"
+          package android.app.prediction;
+          import android.os.Parcelable;
+          public final class AppTargetId implements Parcelable {
+              public int describeContents() { return 0; }
+              public void writeToParcel(android.os.Parcel dest, int flags) {}
+              public String getId() { return ""; }
+          }
+          EOF
+
+          # Creiamo il file finto per AppTargetEvent
+          cat << 'EOF' > "$STUB_DIR/AppTargetEvent.java"
+          package android.app.prediction;
+          import android.os.Parcelable;
+          public final class AppTargetEvent implements Parcelable {
+              public static final int ACTION_LAUNCH = 1;
+              public static final int ACTION_DISMISS = 2;
+              public int describeContents() { return 0; }
+              public void writeToParcel(android.os.Parcel dest, int flags) {}
+              public AppTarget getTarget() { return null; }
+              public int getAction() { return 0; }
+              public static final class Builder {
+                  public Builder(AppTarget target, int action) {}
+                  public AppTargetEvent build() { return null; }
+              }
+          }
+          EOF
+
+          echo "Stub generati con successo!"
+          ls -la "$STUB_DIR"
 
       - name: Esegui la Build dell'APK
         run: |
@@ -57,7 +101,6 @@ jobs:
           DIR_PATH=$(dirname "$GRADLEW_PATH")
           cd "$DIR_PATH"
           chmod +x ./gradlew
-          # Rimuoviamo il "|| true" così se fallisce capiamo subito se ha superato lo scoglio Kotlin
           ./gradlew clean assembleDebug --stacktrace --no-daemon
 
       - name: Trova e carica l'APK generato
