@@ -13,6 +13,13 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
+      - name: Estrai il codice sorgente dallo ZIP
+        run: |
+          echo "Estrazione di AviateClone_v10_SmartML.zip in corso..."
+          unzip -o AviateClone_v10_SmartML.zip
+          echo "Contenuto estratto:"
+          ls -la
+
       - name: Configura JDK 17
         uses: actions/setup-java@v4
         with:
@@ -29,11 +36,11 @@ jobs:
         run: |
           sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Trova ed esegui gradlew ovunque sia
+      - name: Trova ed esegui gradlew
         run: |
           GRADLEW_PATH=$(find . -name gradlew)
           if [ -z "$GRADLEW_PATH" ]; then
-            echo "ERRORE: gradlew non trovato nel repository!"
+            echo "ERRORE: gradlew non trovato nemmeno dopo l'estrazione dello ZIP!"
             exit 1
           fi
           DIR_PATH=$(dirname "$GRADLEW_PATH")
