@@ -36,12 +36,9 @@ jobs:
 
       - name: Iniezione Diretta Stub (AppPrediction) nel codice sorgente
         run: |
-          # Definiamo il percorso esatto della sorgente java dentro la cartella estratta
           STUB_PATH="AviateFixed/app/src/main/java/android/app/prediction"
-          echo "Creazione cartella stub in: $STUB_PATH"
           mkdir -p "$STUB_PATH"
           
-          # Creiamo i 3 file finti direttamente dove Gradle va a cercare il codice sorgente dell'app
           cat << 'EOF' > "$STUB_PATH/AppTarget.java"
           package android.app.prediction;
           import android.os.Parcelable;
@@ -81,9 +78,14 @@ jobs:
               }
           }
           EOF
+          echo "Stub AppPrediction inseriti."
 
-          echo "Stub iniettati con successo nella struttura del progetto!"
-          ls -la "$STUB_PATH"
+      - name: Iniezione librerie Jetpack Lifecycle mancanti
+        run: |
+          # Aggiungiamo la dipendenza mancante in fondo al build.gradle dell'app in modo sicuro
+          echo "" >> AviateFixed/app/build.gradle
+          echo "dependencies { implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2' }" >> AviateFixed/app/build.gradle
+          echo "Libreria lifecycle-runtime-ktx iniettata!"
 
       - name: Esegui la Build dell'APK
         run: |
