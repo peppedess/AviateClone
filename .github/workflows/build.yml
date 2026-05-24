@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-const WORKFLOW_YAML = `name: Build AviateClone v10 APK
+name: Build AviateClone v10 APK
 
 on:
   push:
@@ -393,12 +391,4 @@ export default function App() {
             background: "rgba(255,255,255,.06)", borderRadius: 6,
             fontFamily: "monospace", color: "#bc8cff", fontSize: 11,
           }}>
-            adb shell appwidget grantbindappwidgetpermission com.aviateclone.launcher
-          </code>
-        </div>
-
-      </div>
-    </div>
-  );
-}
-
+            adb shell
