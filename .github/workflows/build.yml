@@ -34,27 +34,31 @@ jobs:
         run: |
           sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Forzo tolleranza errori compilazione Kotlin
+      - name: Iniezione Stub API Nascoste Android
         run: |
           GRADLEW_PATH=$(find . -name gradlew)
           DIR_PATH=$(dirname "$GRADLEW_PATH")
           cd "$DIR_PATH"
           
-          echo "Configuro Gradle per essere tollerante o aggiungere i flag di ignore..."
-          # Aggiungiamo un workaround nel build.gradle principale o dell'app per ignorare i warning/errori di compilazione se possibile,
-          # oppure forziamo l'uso di impostazioni flessibili per Kotlin
           if [ -f "app/build.gradle" ]; then
-            echo "tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { kotlinOptions { freeCompilerArgs += ['-Xskip-metadata-version-check', '-Xallow-unstable-dependencies'] } }" >> app/build.gradle
+            echo "Aggiungo la repository specifica e la dipendenza stub per AppPrediction..."
+            
+            # 1. Ci assicuriamo che nel blocco dependencies ci sia lo stub per compilare le API nascoste
+            # Usiamo compileOnly così serve solo a far star zitto il compilatore, senza appesantire l'APK
+            sed -i '/dependencies {/a \    compileOnly "dev.rikka.tools.refine:runtime:4.3.0"' app/build.gradle
+            
+            # 2. Aggiungiamo una regola per mappare le classi mancanti di AppTarget se necessario
+            echo "tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach { kotlinOptions { freeCompilerArgs += ['-Xallow-unstable-dependencies'] } }" >> app/build.gradle
           fi
 
-      - name: Esegui la Build dell'APK (tollerante)
+      - name: Esegui la Build dell'APK
         run: |
           GRADLEW_PATH=$(find . -name gradlew)
           DIR_PATH=$(dirname "$GRADLEW_PATH")
           cd "$DIR_PATH"
           chmod +x ./gradlew
-          # Usiamo l'opzione -x per saltare i check più severi se necessario, provando a portare a casa l'assemble
-          ./gradlew clean assembleDebug --continue --stacktrace --no-daemon || true
+          # Rimuoviamo il "|| true" così se fallisce capiamo subito se ha superato lo scoglio Kotlin
+          ./gradlew clean assembleDebug --stacktrace --no-daemon
 
       - name: Trova e carica l'APK generato
         uses: actions/upload-artifact@v4
