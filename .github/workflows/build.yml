@@ -34,23 +34,14 @@ jobs:
         run: |
           sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Generazione Stub API Nascoste (AppPrediction)
+      - name: Creazione ed iniezione Stub API Nascoste
         run: |
-          # Cerchiamo dove si trova la cartella principale del codice sorgente dell'app
-          APP_PATH=$(find . -name "MainActivity.kt" -o -name "MainActivity.java" | head -n 1)
-          SRC_MAIN_DIR=$(echo "$APP_PATH" | sed 's/\/java\/.*//' | sed 's/\/kotlin\/.*//')
+          # Creiamo una cartella di stub isolata nella root del workflow
+          STUB_PATH="$GITHUB_WORKSPACE/android_hidden_stubs/android/app/prediction"
+          mkdir -p "$STUB_PATH"
           
-          # Se non la trova di default, proviamo a forzare il percorso standard
-          if [ -z "$SRC_MAIN_DIR" ]; then
-            SRC_MAIN_DIR="AviateFixed/app/src/main"
-          fi
-          
-          STUB_DIR="$SRC_MAIN_DIR/java/android/app/prediction"
-          echo "Creazione degli stub in: $STUB_DIR"
-          mkdir -p "$STUB_DIR"
-          
-          # Creiamo il file finto per AppTarget
-          cat << 'EOF' > "$STUB_DIR/AppTarget.java"
+          # Creiamo i 3 file finti
+          cat << 'EOF' > "$STUB_PATH/AppTarget.java"
           package android.app.prediction;
           import android.os.Parcelable;
           public final class AppTarget implements Parcelable {
@@ -63,8 +54,7 @@ jobs:
           }
           EOF
 
-          # Creiamo il file finto per AppTargetId
-          cat << 'EOF' > "$STUB_DIR/AppTargetId.java"
+          cat << 'EOF' > "$STUB_PATH/AppTargetId.java"
           package android.app.prediction;
           import android.os.Parcelable;
           public final class AppTargetId implements Parcelable {
@@ -74,8 +64,7 @@ jobs:
           }
           EOF
 
-          # Creiamo il file finto per AppTargetEvent
-          cat << 'EOF' > "$STUB_DIR/AppTargetEvent.java"
+          cat << 'EOF' > "$STUB_PATH/AppTargetEvent.java"
           package android.app.prediction;
           import android.os.Parcelable;
           public final class AppTargetEvent implements Parcelable {
@@ -92,8 +81,18 @@ jobs:
           }
           EOF
 
-          echo "Stub generati con successo!"
-          ls -la "$STUB_DIR"
+          # Cerchiamo il build.gradle dell'app e gli diciamo di includere questa cartella di stub
+          APP_GRADLE=$(find . -name "build.gradle" | grep "/app/")
+          if [ -n "$APP_GRADLE" ]; then
+            echo "Modifico il file: $APP_GRADLE"
+            # Inietta il percorso degli stub nelle sorgenti di compilazione di Android
+            sed -i '/android {/a \    sourceSets { main { java.srcDirs += ["'"$GITHUB_WORKSPACE/android_hidden_stubs"'"] } }' "$APP_GRADLE"
+            echo "Iniezione completata con successo nel gradle dell'app!"
+          else
+            echo "ATTENZIONE: app/build.gradle non trovato, provo sul build.gradle principale..."
+            MAIN_GRADLE=$(find . -name "build.gradle" | head -n 1)
+            sed -i '/android {/a \    sourceSets { main { java.srcDirs += ["'"$GITHUB_WORKSPACE/android_hidden_stubs"'"] } }' "$MAIN_GRADLE"
+          fi
 
       - name: Esegui la Build dell'APK
         run: |
