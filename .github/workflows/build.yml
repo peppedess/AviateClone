@@ -5,48 +5,47 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-# Questo dice a GitHub di eseguire tutti i comandi dentro la sottocartella del progetto
-defaults:
-  run:
-    working-directory: AviateFixed
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Configura JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
-          # Specifichiamo il percorso del file di build per il sistema di cache
-          build-root-directory: AviateFixed
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Accept Android SDK licenses
+      - name: Accetta licenze SDK
         run: yes | sdkmanager --licenses || true
 
-      - name: Install SDK components
+      - name: Installa componenti SDK
         run: |
           sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+      - name: Trova ed esegui gradlew ovunque sia
+        run: |
+          GRADLEW_PATH=$(find . -name gradlew)
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "ERRORE: gradlew non trovato nel repository!"
+            exit 1
+          fi
+          DIR_PATH=$(dirname "$GRADLEW_PATH")
+          echo "Trovato gradlew in: $DIR_PATH"
+          cd "$DIR_PATH"
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --stacktrace --no-daemon
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
-
-      - name: Upload Debug APK
-         # Nota: usiamo v4 senza il path della sottocartella perché lavora già lì dentro
+      - name: Trova e carica l'APK generato
         uses: actions/upload-artifact@v4
         with:
           name: AviateClone-v10-debug
-          path: AviateFixed/app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            **/build/outputs/apk/debug/*.apk
           retention-days: 14
