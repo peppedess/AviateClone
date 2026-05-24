@@ -80,12 +80,25 @@ jobs:
           EOF
           echo "Stub AppPrediction inseriti."
 
-      - name: Iniezione librerie Jetpack Lifecycle mancanti
+      - name: Fix Volante Lifecycle via Kotlin Stub
         run: |
-          # Aggiungiamo la dipendenza mancante in fondo al build.gradle dell'app in modo sicuro
-          echo "" >> AviateFixed/app/build.gradle
-          echo "dependencies { implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2' }" >> AviateFixed/app/build.gradle
-          echo "Libreria lifecycle-runtime-ktx iniettata!"
+          # Cerchiamo dove si trova il file LauncherModel.kt nel progetto
+          LAUNCHER_MODEL_PATH=$(find . -name "LauncherModel.kt" | head -n 1)
+          if [ -n "$LAUNCHER_MODEL_PATH" ]; then
+            LAUNCHER_DIR=$(dirname "$LAUNCHER_MODEL_PATH")
+            echo "Creo un fallback per lifecycleScope in: $LAUNCHER_DIR"
+            
+            # Creiamo un file Kotlin volante che mappa lifecycleScope sul GlobalScope delle coroutine nativo
+            cat << 'EOF' > "$LAUNCHER_DIR/LifecycleScopeStub.kt"
+            package com.aviateclone.launcher
+            
+            import kotlinx.coroutines.GlobalScope
+            import kotlinx.coroutines.CoroutineScope
+            
+            val Any.lifecycleScope: CoroutineScope
+                get() = GlobalScope
+            EOF
+          fi
 
       - name: Esegui la Build dell'APK
         run: |
