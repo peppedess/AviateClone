@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AviateClone</string>
+    <string name="stream_title">Smart Stream</string>
+    <string name="home_title">Home</string>
+    <string name="collections_title">Collezioni</string>
+    <string name="apps_title">Tutte le app</string>
+    <string name="widget_add">+ Aggiungi widget</string>
+    <string name="widget_placeholder">Aggiungi un widget con il pulsante sopra</string>
+    <string name="widget_removed">Widget rimosso</string>
+    <string name="search_hint">Cerca o digita un URL</string>
+    <string name="dock_long_press">Tieni premuto per personalizzare</string>
+    <string name="onboarding_skip">Salta</string>
+    <string name="onboarding_next">Avanti</string>
+    <string name="onboarding_done">Inizia a usare AviateClone</string>
+    <string name="permission_location_title">Posizione</string>
+    <string name="permission_location_msg">Serve per rilevare casa/lavoro e mostrare meteo reale.</string>
+    <string name="permission_calendar_title">Calendario</string>
+    <string name="permission_calendar_msg">Serve per mostrare i prossimi eventi nello Smart Stream.</string>
+    <string name="usage_stats_title">App recenti</string>
+    <string name="usage_stats_msg">Concedi l\'accesso alle statistiche per suggerire le app più usate.</string>
+</resources>

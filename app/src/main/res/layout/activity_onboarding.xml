@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#0A0F1E">
+
+    <!-- Blob decorativo -->
+    <View android:layout_width="300dp" android:layout_height="300dp"
+        android:background="@drawable/bg_onboard_blob"
+        android:alpha="0.15"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/onboardCard"/>
+
+    <!-- Card principale step -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/onboardCard"
+        android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp" android:layout_marginBottom="40dp"
+        app:cardBackgroundColor="#FEFBFF"
+        app:cardCornerRadius="32dp" app:cardElevation="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/onboardDots"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="32dp">
+
+            <TextView android:id="@+id/onboardEmoji"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="👋" android:textSize="56sp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"/>
+
+            <TextView android:id="@+id/onboardTitle"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Benvenuto in AviateClone"
+                android:textColor="#1C1B1F" android:textSize="22sp"
+                android:fontFamily="sans-serif-medium" android:gravity="center"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView android:id="@+id/onboardDesc"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="Un launcher intelligente."
+                android:textColor="#49454F" android:textSize="14sp"
+                android:fontFamily="sans-serif-light" android:gravity="center"
+                android:lineSpacingMultiplier="1.4" android:layout_marginBottom="28dp"/>
+
+            <Button android:id="@+id/btnOnboardMain"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:text="Inizia"
+                android:backgroundTint="#4D5BBF"
+                android:textColor="#FFFFFF" android:textSize="15sp"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView android:id="@+id/btnOnboardSkip"
+                android:layout_width="match_parent" android:layout_height="40dp"
+                android:text="Salta"
+                android:textColor="#79747E" android:textSize="14sp"
+                android:gravity="center"
+                android:clickable="true" android:focusable="true"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Progress dots -->
+    <LinearLayout android:id="@+id/onboardDots"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

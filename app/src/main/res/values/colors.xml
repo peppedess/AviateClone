@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- M3 Light — seed indigo Aviate -->
+    <color name="m3_primary">#4A5BBF</color>
+    <color name="m3_on_primary">#FFFFFF</color>
+    <color name="m3_primary_container">#DDE1FF</color>
+    <color name="m3_on_primary_container">#00105C</color>
+    <color name="m3_secondary">#5A5D72</color>
+    <color name="m3_on_secondary">#FFFFFF</color>
+    <color name="m3_secondary_container">#DFE0F9</color>
+    <color name="m3_surface">#FEFBFF</color>
+    <color name="m3_surface_variant">#E3E1EC</color>
+    <color name="m3_on_surface">#1C1B1F</color>
+    <color name="m3_on_surface_variant">#46444F</color>
+    <color name="m3_outline">#77757F</color>
+    <color name="m3_outline_variant">#C7C5D0</color>
+
+    <!-- Surface levels -->
+    <color name="surface_container_lowest">#FEFBFF</color>
+    <color name="surface_container_low">#F7F2FB</color>
+    <color name="surface_container">#F1ECF4</color>
+    <color name="surface_container_high">#EBE7EF</color>
+
+    <!-- Testi su wallpaper -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#D9FFFFFF</color>
+    <color name="text_tertiary">#99FFFFFF</color>
+
+    <!-- Testi su card bianche — UNICA dichiarazione -->
+    <color name="text_on_card">#1C1B1F</color>
+    <color name="text_on_card_secondary">#49454F</color>
+    <color name="text_on_card_hint">#79747E</color>
+
+    <!-- Card — bianco puro come Aviate, nessuna tinta blu -->
+    <color name="card_white">#FFFFFF</color>
+    <color name="card_elevated">#FAFAFA</color>
+
+    <!-- Accento brand -->
+    <color name="accent">#4A5BBF</color>
+    <color name="accent_light">#DDE1FF</color>
+
+    <!-- Colori informativi card contextual -->
+    <color name="card_battery_bg">#F0FFF5</color>
+    <color name="card_wifi_bg">#EFF6FF</color>
+    <color name="card_call_bg">#FFF3F3</color>
+    <color name="card_sms_bg">#EFF6FF</color>
+    <color name="card_car_bg">#F0FFF5</color>
+    <color name="card_music_bg">#F8F0FF</color>
+    <color name="card_calendar_bg">#FFFFFF</color>
+    <color name="card_weather_bg">#FFFFFF</color>
+
+    <!-- Colori header categorie Collezioni -->
+    <color name="cat_communication">#3949AB</color>
+    <color name="cat_navigation">#00695C</color>
+    <color name="cat_media">#6A1B9A</color>
+    <color name="cat_productivity">#0D47A1</color>
+    <color name="cat_news">#BF360C</color>
+    <color name="cat_entertainment">#880E4F</color>
+    <color name="cat_food">#E65100</color>
+    <color name="cat_finance">#1B5E20</color>
+    <color name="cat_photo">#880E4F</color>
+    <color name="cat_health">#006064</color>
+    <color name="cat_other">#37474F</color>
+
+    <!-- Onboarding -->
+    <color name="onboard_bg">#0A0F1E</color>
+
+    <!-- Scrim wallpaper (Stream header gradient) -->
+    <color name="scrim_top">#B3000000</color>
+    <color name="scrim_bottom">#00000000</color>
+</resources>
