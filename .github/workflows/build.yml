@@ -1,4 +1,4 @@
-name: Build AviateClone v10 APK
+name: Build AviateClone APK
 
 on:
   push:
@@ -13,11 +13,6 @@ jobs:
       - name: Checkout del codice
         uses: actions/checkout@v4
 
-      - name: Estrai il codice sorgente dallo ZIP
-        run: |
-          echo "Estrazione di AviateClone_v10_SmartML.zip..."
-          unzip -o AviateClone_v10_SmartML.zip
-
       - name: Configura JDK 17
         uses: actions/setup-java@v4
         with:
@@ -30,86 +25,19 @@ jobs:
       - name: Accetta licenze SDK
         run: yes | sdkmanager --licenses || true
 
-      - name: Installa componenti SDK e Android 34
+      - name: Installa componenti SDK e Android 35
         run: |
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
-
-      - name: Iniezione Diretta Stub (AppPrediction) nel codice sorgente
-        run: |
-          STUB_PATH="AviateFixed/app/src/main/java/android/app/prediction"
-          mkdir -p "$STUB_PATH"
-          
-          cat << 'EOF' > "$STUB_PATH/AppTarget.java"
-          package android.app.prediction;
-          import android.os.Parcelable;
-          public final class AppTarget implements Parcelable {
-              public int describeContents() { return 0; }
-              public void writeToParcel(android.os.Parcel dest, int flags) {}
-              public AppTargetId getId() { return null; }
-              public String getPackageName() { return ""; }
-              public String getClassName() { return ""; }
-              public android.os.UserHandle getUser() { return null; }
-          }
-          EOF
-
-          cat << 'EOF' > "$STUB_PATH/AppTargetId.java"
-          package android.app.prediction;
-          import android.os.Parcelable;
-          public final class AppTargetId implements Parcelable {
-              public int describeContents() { return 0; }
-              public void writeToParcel(android.os.Parcel dest, int flags) {}
-              public String getId() { return ""; }
-          }
-          EOF
-
-          cat << 'EOF' > "$STUB_PATH/AppTargetEvent.java"
-          package android.app.prediction;
-          import android.os.Parcelable;
-          public final class AppTargetEvent implements Parcelable {
-              public static final int ACTION_LAUNCH = 1;
-              public static final int ACTION_DISMISS = 2;
-              public int describeContents() { return 0; }
-              public void writeToParcel(android.os.Parcel dest, int flags) {}
-              public AppTarget getTarget() { return null; }
-              public int getAction() { return 0; }
-              public static final class Builder {
-                  public Builder(AppTarget target, int action) {}
-                  public AppTargetEvent build() { return null; }
-              }
-          }
-          EOF
-          echo "Stub AppPrediction inseriti."
-
-      - name: Fix Volante Lifecycle via Kotlin Stub
-        run: |
-          # Cerchiamo dove si trova il file LauncherModel.kt nel progetto
-          LAUNCHER_MODEL_PATH=$(find . -name "LauncherModel.kt" | head -n 1)
-          if [ -n "$LAUNCHER_MODEL_PATH" ]; then
-            LAUNCHER_DIR=$(dirname "$LAUNCHER_MODEL_PATH")
-            echo "Creo un fallback per lifecycleScope in: $LAUNCHER_DIR"
-            
-            # Creiamo un file Kotlin volante che mappa lifecycleScope sul GlobalScope delle coroutine nativo
-            cat << 'EOF' > "$LAUNCHER_DIR/LifecycleScopeStub.kt"
-            package com.aviateclone.launcher
-            
-            import kotlinx.coroutines.GlobalScope
-            import kotlinx.coroutines.CoroutineScope
-            
-            val Any.lifecycleScope: CoroutineScope
-                get() = GlobalScope
-            EOF
-          fi
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - name: Esegui la Build dell'APK
         run: |
-          cd AviateFixed
           chmod +x ./gradlew
           ./gradlew clean assembleDebug --stacktrace --no-daemon
 
       - name: Trova e carica l'APK generato
         uses: actions/upload-artifact@v4
         with:
-          name: AviateClone-v10-debug
+          name: AviateClone-debug
           path: |
             **/build/outputs/apk/debug/*.apk
           retention-days: 14
