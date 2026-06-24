@@ -1,5 +1,9 @@
 package com.aviateclone.launcher.ui.theme
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,7 +13,13 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 
 private val LightColors = lightColorScheme(
     primary             = AviatePrimaryLight,
@@ -60,12 +70,30 @@ fun AviateCloneTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
-            if (darkTheme) dynamicDarkColorScheme(context)
-            else dynamicLightColorScheme(context)
-        darkTheme -> DarkColors
-        else      -> LightColors
+
+    // Forza una ricomposizione quando il wallpaper cambia, così la palette
+    // dynamicColor viene ricalcolata anche se al primo avvio il sistema non
+    // aveva ancora pronta l'estrazione colori per lo sfondo corrente.
+    var wallpaperTick by remember { mutableIntStateOf(0) }
+    DisposableEffect(Unit) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(c: Context?, intent: Intent?) { wallpaperTick++ }
+        }
+        ContextCompat.registerReceiver(
+            context, receiver, IntentFilter(Intent.ACTION_WALLPAPER_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        onDispose { context.unregisterReceiver(receiver) }
+    }
+
+    val colorScheme = remember(darkTheme, dynamicColor, wallpaperTick) {
+        when {
+            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+                if (darkTheme) dynamicDarkColorScheme(context)
+                else dynamicLightColorScheme(context)
+            darkTheme -> DarkColors
+            else      -> LightColors
+        }
     }
     val extraColors = if (darkTheme) DarkExtraColors else LightExtraColors
 

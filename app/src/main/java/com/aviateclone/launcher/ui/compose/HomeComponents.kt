@@ -75,8 +75,8 @@ fun HomeSearchBar(
             .clip(RoundedCornerShape(50))
             .clickable { onSearchClick() },
         shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f),
-        tonalElevation = 2.dp
+        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        shadowElevation = 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
@@ -159,7 +159,8 @@ fun WidgetSection(
                     .clip(MaterialTheme.shapes.large)
                     .clickable { onAddWidget() },
                 shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shadowElevation = 2.dp
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),

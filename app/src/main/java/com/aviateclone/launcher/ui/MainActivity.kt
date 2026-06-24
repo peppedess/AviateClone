@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.aviateclone.launcher.data.AppInfo
 import com.aviateclone.launcher.databinding.ActivityMainBinding
@@ -110,10 +111,32 @@ class MainActivity : AppCompatActivity() {
                 page.translationZ = -abs // z-order: pagina corrente sopra le altre
             }
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(p: Int) = updateDots(p)
+                override fun onPageSelected(p: Int) {
+                    updateDots(p)
+                    updateSystemBarIcons(p)
+                }
             })
         }
         updateDots(HOME_PAGE)
+        updateSystemBarIcons(HOME_PAGE)
+    }
+
+    /**
+     * La Home mostra il wallpaper (spesso scuro/contrastato) → icone chiare.
+     * Le altre pagine (Smart Stream, Collezioni, Cassetto) hanno sfondo
+     * Material3 chiaro/scuro a seconda del tema → icone scure in light theme.
+     */
+    private fun updateSystemBarIcons(page: Int) {
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        val isHomePage = page == HOME_PAGE
+        val systemInDarkTheme = (resources.configuration.uiMode and
+            android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
+        // Sulla Home le icone sono sempre chiare (galleggiano sul wallpaper);
+        // sulle altre pagine seguono il tema chiaro/scuro del sistema.
+        val lightIcons = isHomePage || systemInDarkTheme
+        controller.isAppearanceLightStatusBars = !lightIcons
+        controller.isAppearanceLightNavigationBars = !lightIcons
     }
 
     private fun updateDots(current: Int) {
