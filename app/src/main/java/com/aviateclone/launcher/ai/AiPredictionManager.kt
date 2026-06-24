@@ -2,7 +2,6 @@ package com.aviateclone.launcher.ai
 
 import android.app.prediction.*
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Process
 import androidx.annotation.RequiresApi
@@ -23,7 +22,7 @@ class AiPredictionManager(private val context: Context) {
 
     val isAvailable: Boolean get() =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_APP_PREDICTION_API)
+        context.packageManager.hasSystemFeature(AppPredictionManager.FEATURE_APP_PREDICTION_API)
 
     @RequiresApi(Build.VERSION_CODES.Q)
     fun startHomePredictions(count: Int = 8, onResult: (List<String>) -> Unit) {
