@@ -135,7 +135,8 @@ class HomeFragment : Fragment() {
                         },
                         onSearchClick = { openSearch() },
                         onMicClick = { openVoiceSearch() },
-                        onAddWidget = { pickWidget() }
+                        onAddWidget = { pickWidget() },
+                        onFavoritesReorder = { from, to -> onFavoritesReordered(from, to) }
                     )
                 }
             }
@@ -144,11 +145,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Preferiti: top 8 per numero di lanci
-        vm.allApps.observe(viewLifecycleOwner) { apps ->
-            val top8 = apps.sortedByDescending { it.launchCount }.take(8)
-            favorites.clear(); favorites.addAll(top8)
-        }
+        // Preferiti: ordine manuale salvato, con fallback alle app più usate
+        vm.allApps.observe(viewLifecycleOwner) { apps -> applyFavoritesOrder(apps) }
         appWidgetHost.startListening()
         restoreWidgets()
         handler.post(clockRunnable)
@@ -226,6 +224,45 @@ class HomeFragment : Fragment() {
             else { appWidgetHost.deleteAppWidgetId(id); deleteWidgetId(id) }
         }
         hasWidgetsState = widgetContainer.childCount > 0
+    }
+
+    // ── Preferiti: ordine manuale persistito, fallback a top-per-lanci ────
+    private val PREFS_FAVS = "aviate_favorites"
+    private val KEY_ORDER = "favorites_order"
+
+    private fun applyFavoritesOrder(apps: List<com.aviateclone.launcher.data.AppInfo>) {
+        val savedOrder = prefsFavorites().getString(KEY_ORDER, null)
+            ?.split(",")?.filter { it.isNotBlank() } ?: emptyList()
+
+        val byPkg = apps.associateBy { it.packageName }
+        val ordered = savedOrder.mapNotNull { byPkg[it] }.toMutableList()
+
+        // Eventuali app non ancora in classifica: in coda, ordinate per lanci,
+        // fino a un massimo di 8 preferiti totali.
+        val remaining = apps.filterNot { it.packageName in savedOrder }
+            .sortedByDescending { it.launchCount }
+        ordered.addAll(remaining)
+
+        val top8 = ordered.take(8)
+        favorites.clear(); favorites.addAll(top8)
+    }
+
+    private fun saveFavoritesOrder() {
+        val order = favorites.joinToString(",") { it.packageName }
+        prefsFavorites().edit().putString(KEY_ORDER, order).apply()
+    }
+
+    private fun prefsFavorites() = requireContext().getSharedPreferences(PREFS_FAVS, 0)
+
+    /** Chiamato dalla UI Compose al termine di un riordino via drag&drop. */
+    fun onFavoritesReordered(from: Int, to: Int) {
+        if (from == to || from !in favorites.indices || to !in favorites.indices) return
+        // Scambio diretto delle due posizioni (non shift): coerente con
+        // l'interazione "trascina sopra un'altra icona per scambiarle".
+        val tmp = favorites[from]
+        favorites[from] = favorites[to]
+        favorites[to] = tmp
+        saveFavoritesOrder()
     }
 
     // ── Orologio ───────────────────────────────────────────────────────────

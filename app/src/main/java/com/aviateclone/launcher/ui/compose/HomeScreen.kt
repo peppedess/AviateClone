@@ -36,7 +36,8 @@ fun HomeScreen(
     onAppClick: (AppInfo) -> Unit,
     onSearchClick: () -> Unit,
     onMicClick: () -> Unit,
-    onAddWidget: () -> Unit
+    onAddWidget: () -> Unit,
+    onFavoritesReorder: (from: Int, to: Int) -> Unit = { _, _ -> }
 ) {
     Column(
         modifier = Modifier
@@ -62,7 +63,8 @@ fun HomeScreen(
 
         FavoritesGrid(
             favorites = favorites,
-            onAppClick = onAppClick
+            onAppClick = onAppClick,
+            onReorder = onFavoritesReorder
         )
 
         WidgetSection(

@@ -2,6 +2,7 @@ package com.aviateclone.launcher.ui.compose
 
 import android.view.View
 import android.widget.FrameLayout
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,15 +23,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.aviateclone.launcher.data.AppInfo
+import kotlin.math.roundToInt
 
 /**
  * Orologio + data. Testo chiaro/scuro deciso dal chiamante in base al
@@ -108,27 +119,93 @@ fun HomeSearchBar(
 }
 
 /**
- * Griglia delle app preferite (4 colonne). Click lancia l'app; il riordino
- * drag&drop verrà gestito a parte. Per ora supporta long-press → opzioni.
+ * Griglia delle app preferite (4 colonne), riordinabile via drag&drop:
+ * tieni premuto un'icona e trascinala su un'altra posizione per scambiarle.
+ * Il tap semplice lancia l'app, il long-press avvia il riordino.
  */
 @Composable
 fun FavoritesGrid(
     favorites: List<AppInfo>,
     onAppClick: (AppInfo) -> Unit,
+    onReorder: (from: Int, to: Int) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        favorites.chunked(4).forEach { rowApps ->
+    val columns = 4
+    var cellSizePx by remember { mutableStateOf(IntSize.Zero) }
+    var draggingIndex by remember { mutableStateOf(-1) }
+    var dragOffset by remember { mutableStateOf(Offset.Zero) }
+    var targetIndex by remember { mutableStateOf(-1) }
+
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        favorites.chunked(columns).forEachIndexed { rowIdx, rowApps ->
             Row(Modifier.fillMaxWidth()) {
-                rowApps.forEach { app ->
+                rowApps.forEachIndexed { colIdx, app ->
+                    val index = rowIdx * columns + colIdx
+                    val isDragging = index == draggingIndex
+                    val isTarget = index == targetIndex && index != draggingIndex
+
                     AppCell(
                         name = app.appName,
                         icon = app.icon,
-                        onClick = { onAppClick(app) },
-                        modifier = Modifier.weight(1f)
+                        onClick = { if (draggingIndex == -1) onAppClick(app) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .onGloballyPositioned { coords ->
+                                if (cellSizePx == IntSize.Zero) {
+                                    cellSizePx = coords.size
+                                }
+                            }
+                            .graphicsLayer {
+                                if (isDragging) {
+                                    translationX = dragOffset.x
+                                    translationY = dragOffset.y
+                                    scaleX = 1.08f; scaleY = 1.08f
+                                    shadowElevation = 12f
+                                }
+                                alpha = if (isTarget) 0.5f else 1f
+                            }
+                            .pointerInput(favorites, index) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = { _ ->
+                                        draggingIndex = index
+                                        targetIndex = index
+                                        dragOffset = Offset.Zero
+                                    },
+                                    onDrag = { change, amount ->
+                                        change.consume()
+                                        dragOffset += amount
+                                        if (cellSizePx.width > 0 && cellSizePx.height > 0) {
+                                            val colDelta = (dragOffset.x / cellSizePx.width).roundToInt()
+                                            val rowDelta = (dragOffset.y / cellSizePx.height).roundToInt()
+                                            val newCol = (colIdx + colDelta).coerceIn(0, columns - 1)
+                                            val newRow = (rowIdx + rowDelta).coerceIn(
+                                                0, (favorites.size - 1) / columns
+                                            )
+                                            val newIndex = (newRow * columns + newCol)
+                                                .coerceIn(0, favorites.lastIndex)
+                                            targetIndex = newIndex
+                                        }
+                                    },
+                                    onDragEnd = {
+                                        if (targetIndex != -1 && targetIndex != draggingIndex) {
+                                            onReorder(draggingIndex, targetIndex)
+                                        }
+                                        draggingIndex = -1
+                                        targetIndex = -1
+                                        dragOffset = Offset.Zero
+                                    },
+                                    onDragCancel = {
+                                        draggingIndex = -1
+                                        targetIndex = -1
+                                        dragOffset = Offset.Zero
+                                    }
+                                )
+                            }
                     )
                 }
-                repeat(4 - rowApps.size) { Spacer(Modifier.weight(1f)) }
+                repeat(columns - rowApps.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }
