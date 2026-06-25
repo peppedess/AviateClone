@@ -86,8 +86,8 @@ fun HomeSearchBar(
             .clip(RoundedCornerShape(50))
             .clickable { onSearchClick() },
         shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-        shadowElevation = 3.dp
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        shadowElevation = 4.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
@@ -96,13 +96,13 @@ fun HomeSearchBar(
             Icon(
                 Icons.Default.Search,
                 contentDescription = "Cerca",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Spacer(Modifier.width(12.dp))
             Text(
                 "Cerca",
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 modifier = Modifier.weight(1f)
             )
             Icon(
@@ -236,8 +236,8 @@ fun WidgetSection(
                     .clip(MaterialTheme.shapes.large)
                     .clickable { onAddWidget() },
                 shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                shadowElevation = 2.dp
+                color = MaterialTheme.colorScheme.tertiaryContainer,
+                shadowElevation = 3.dp
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),
@@ -247,13 +247,13 @@ fun WidgetSection(
                     Icon(
                         Icons.Default.Add,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         "Aggiungi widget",
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                 }
             }

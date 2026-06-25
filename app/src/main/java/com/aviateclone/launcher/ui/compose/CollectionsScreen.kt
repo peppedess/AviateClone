@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.drawable.toBitmap
 import com.aviateclone.launcher.data.AppCategory
 import com.aviateclone.launcher.data.AppInfo
@@ -124,7 +125,7 @@ private fun CollectionsSearchField(
     Surface(
         modifier = modifier.clip(RoundedCornerShape(50)),
         shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         TextField(
             value = query,
@@ -142,8 +143,8 @@ private fun CollectionsSearchField(
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
                 unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
             )
@@ -156,11 +157,20 @@ private fun CategoryHeader(category: AppCategory, count: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 12.dp, bottom = 4.dp),
+            .padding(top = 14.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(category.emoji, style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.width(8.dp))
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.tertiaryContainer
+        ) {
+            Text(
+                category.emoji,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+            )
+        }
+        Spacer(Modifier.width(10.dp))
         Text(
             category.displayName,
             style = MaterialTheme.typography.titleSmall,
@@ -184,7 +194,7 @@ private fun AppRow(app: AppInfo, badgeCount: Int, onClick: () -> Unit) {
             .clip(MaterialTheme.shapes.medium)
             .clickable { onClick() },
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceContainer
+        color = Color.Transparent
     ) {
         Row(
             modifier = Modifier

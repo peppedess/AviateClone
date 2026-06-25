@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -109,7 +110,7 @@ fun AppListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 0.dp)
                     .padding(top = statusBarPadding + 12.dp, bottom = 8.dp)
-                    .padding(end = 32.dp) // spazio per il side alphabet
+                    .padding(end = 36.dp) // spazio per la colonna side-alphabet (28dp + margini)
             )
 
             LazyColumn(
@@ -148,7 +149,7 @@ fun AppListScreen(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(top = statusBarPadding, bottom = navBarPadding, end = 4.dp)
-                    .fillMaxSize()
+                    .fillMaxHeight()
             )
         }
     }
@@ -163,7 +164,7 @@ private fun AppListSearchField(
     Surface(
         modifier = modifier.clip(RoundedCornerShape(50)),
         shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = MaterialTheme.colorScheme.secondaryContainer
     ) {
         TextField(
             value = query,
@@ -181,10 +182,14 @@ private fun AppListSearchField(
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                focusedLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSecondaryContainer
             )
         )
     }

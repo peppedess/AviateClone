@@ -56,7 +56,9 @@ fun InfoCard(
             .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            containerColor = androidx.compose.ui.graphics.lerp(
+                MaterialTheme.colorScheme.surfaceContainerHigh, tint, 0.10f
+            )
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
