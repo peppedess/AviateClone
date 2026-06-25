@@ -191,15 +191,32 @@ class HomeFragment : Fragment() {
     }
     private fun attachWidget(id: Int) {
         val info = appWidgetManager.getAppWidgetInfo(id) ?: return
-        val dp = resources.displayMetrics.density
-        val wv = appWidgetHost.createView(requireContext(), id, info)
+        val density = resources.displayMetrics.density
+        val wv = appWidgetHost.createView(requireContext().applicationContext, id, info)
+        // Essenziale: associa esplicitamente id+info alla host view, altrimenti
+        // il widget resta un riquadro vuoto.
+        wv.setAppWidget(id, info)
+
+        val widthPx = resources.displayMetrics.widthPixels - (40 * density).toInt()
+        val minWidthDp = (info.minWidth / density).toInt().coerceAtLeast(40)
+        val minHeightDp = (info.minHeight / density).toInt().coerceAtLeast(40)
+        val widgetWidthDp = (widthPx / density).toInt().coerceAtLeast(minWidthDp)
+
+        // Comunica al provider le dimensioni a cui renderizzare (senza questo
+        // molti widget mostrano contenuto vuoto).
+        try {
+            wv.updateAppWidgetSize(android.os.Bundle(), minWidthDp, minHeightDp,
+                widgetWidthDp, minHeightDp)
+        } catch (_: Exception) { }
+
         wv.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         wv.layoutParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
-            (info.minHeight.coerceAtLeast(80) * dp).toInt()
+            (info.minHeight.coerceAtLeast(80) * density).toInt()
         )
         wv.setOnLongClickListener { removeWidget(id, wv); true }
         widgetContainer.addView(wv)
+        widgetContainer.requestLayout()
         hasWidgetsState = widgetContainer.childCount > 0
         saveWidgetId(id)
     }

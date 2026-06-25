@@ -6,11 +6,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.expressiveDarkColorScheme
+import androidx.compose.material3.expressiveLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -21,48 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
-private val LightColors = lightColorScheme(
-    primary             = AviatePrimaryLight,
-    onPrimary           = AviateOnPrimaryLight,
-    primaryContainer    = AviatePrimaryContainerLight,
-    onPrimaryContainer  = AviateOnPrimaryContainerLight,
-    secondary           = AviateSecondaryLight,
-    onSecondary         = AviateOnSecondaryLight,
-    secondaryContainer  = AviateSecondaryContainerLight,
-    onSecondaryContainer = AviateOnSecondaryContainerLight,
-    tertiary            = AviateTertiaryLight,
-    onTertiary          = AviateOnTertiaryLight,
-    surface             = AviateSurfaceLight,
-    surfaceVariant      = AviateSurfaceVariantLight,
-    onSurface           = AviateOnSurfaceLight,
-    onSurfaceVariant    = AviateOnSurfaceVariantLight,
-    outline             = AviateOutlineLight,
-    outlineVariant      = AviateOutlineVariantLight
-)
-
-private val DarkColors = darkColorScheme(
-    primary             = AviatePrimaryDark,
-    onPrimary           = AviateOnPrimaryDark,
-    primaryContainer    = AviatePrimaryContainerDark,
-    onPrimaryContainer  = AviateOnPrimaryContainerDark,
-    secondary           = AviateSecondaryDark,
-    onSecondary         = AviateOnSecondaryDark,
-    secondaryContainer  = AviateSecondaryContainerDark,
-    onSecondaryContainer = AviateOnSecondaryContainerDark,
-    tertiary            = AviateTertiaryDark,
-    onTertiary          = AviateOnTertiaryDark,
-    surface             = AviateSurfaceDark,
-    surfaceVariant      = AviateSurfaceVariantDark,
-    onSurface           = AviateOnSurfaceDark,
-    onSurfaceVariant    = AviateOnSurfaceVariantDark,
-    outline             = AviateOutlineDark,
-    outlineVariant      = AviateOutlineVariantDark
-)
-
 /**
- * Tema dell'app. Material You dinamico su Android 12+, palette di fallback
- * sotto. [dynamicColor] permette di disattivare il colore dinamico se serve.
+ * Tema dell'app in Material 3 Expressive: Material You dinamico su Android 12+,
+ * fallback alla palette expressive sotto, motion fisico a molla di default.
  */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AviateCloneTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -91,18 +56,19 @@ fun AviateCloneTheme(
             dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
                 if (darkTheme) dynamicDarkColorScheme(context)
                 else dynamicLightColorScheme(context)
-            darkTheme -> DarkColors
-            else      -> LightColors
+            darkTheme -> expressiveDarkColorScheme()
+            else      -> expressiveLightColorScheme()
         }
     }
     val extraColors = if (darkTheme) DarkExtraColors else LightExtraColors
 
     CompositionLocalProvider(LocalAviateExtraColors provides extraColors) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography  = AviateTypography,
-            shapes      = AviateShapes,
-            content     = content
+        MaterialExpressiveTheme(
+            colorScheme  = colorScheme,
+            motionScheme = MotionScheme.expressive(),
+            typography   = AviateTypography,
+            shapes       = AviateShapes,
+            content      = content
         )
     }
 }

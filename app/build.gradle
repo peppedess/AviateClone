@@ -52,14 +52,19 @@ dependencies {
     implementation 'androidx.dynamicanimation:dynamicanimation-ktx:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
 
-    // ── Jetpack Compose (stesso stack di Treni Tracker) ──────────────────
+    // ── Jetpack Compose ──────────────────────────────────────────────────
+    // BOM 2025.09 (allineato a Kotlin 2.0.21 del progetto). Solo material3 è
+    // forzato a 1.5.0-alpha per le API M3 Expressive; Gradle alza in modo
+    // transitivo le librerie compose che material3-alpha richiede.
     def composeBom = platform('androidx.compose:compose-bom:2025.09.00')
     implementation composeBom
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.foundation:foundation'
-    implementation 'androidx.compose.material3:material3'
+    // Material3 1.5.0-alpha per le API Material 3 Expressive (MaterialExpressiveTheme,
+    // MotionScheme, shape scale increased). Versione esplicita oltre il BOM.
+    implementation 'androidx.compose.material3:material3:1.5.0-alpha22'
     implementation 'androidx.compose.material:material-icons-extended'
     implementation 'androidx.activity:activity-compose:1.9.3'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7'
